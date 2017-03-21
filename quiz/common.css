@@ -1,0 +1,42 @@
+body{
+	background-color: skyblue;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+}
+#divMain{
+	text-align: center;
+	height: 100%;
+}
+#divCover{
+	width: 100%;
+}
+#divTitle{
+	font-size: 4em;
+}
+#divCoverResult{
+	width: 50%;
+	float: left;
+	margin-right: 10px;
+}
+#imgCover{
+	width: 100%;
+}
+#btnYes, #btnNo, #btnShare, #btnRe, #btnStart{
+	margin-top: 30px;
+	margin-bottom: 30px;
+	font-size: 2em;
+}
+#btnStart{
+	width: 100%;
+}
+#btnYes, #btnNo, #btnShare, #btnRe{
+	width: 49%;
+}
+.pDescribe{
+	text-align: left;
+	text-indent: 10%;
+	margin-left: 10px;
+	font-size: 0.75em;
+}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Quiz</title>
+		<link rel="stylesheet" href="common.css" />
+	</head>
+	<body>
+		<div id="divMain">
+			<div id="divCover">
+				<img id="imgCover" src="http://goo.gl/BU9NIY" />
+			</div>
+			<div id="divTitle">
+				<span>สงกรานต์ไปไหนดี ?</span>
+			</div>
+			<button id="btnStart">Start</button>
+			จัดทำเพื่อ <a href="https://comcamp.in.th">Comcamp</a>
+		</div>
+		<script type="text/javascript">
+			document.body.addEventListener("keypress", start);
+			document.getElementById("btnStart").addEventListener("click", start);
+
+			function start(event){
+				if(event.keyCode != undefined && event.keyCode != 13)
+					return;
+				window.location = "Q1.html";
+			}
+		</script>
+	</body>
+</html>
