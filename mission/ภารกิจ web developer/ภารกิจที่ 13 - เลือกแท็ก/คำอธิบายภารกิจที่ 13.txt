@@ -1,0 +1,16 @@
+﻿ภารกิจที่ 13 - เลือกแท็ก
+	น้องๆ จะได้รู้จักคำสั่ง getElement... เพื่อเลือกแท็ก HTML มากระทำการต่างๆ
+	เริ่มภารกิจที่ 13 ได้
+- เปิดไฟล์ mission13.html ที่พี่ๆ เตรียมไว้ให้ ด้วย text editor
+- สังเกตโค้ดโดยเฉพาะส่วน body
+- เปิดไฟล์ mission13.html ด้วย browser
+- เปิด console (ภารกิจที่ 10 - คอนโซล)
+- พิมพ์โค้ดตามนี้
+	document.getElementsByTagName("p")[0].innerHTML;
+- เกิดอะไรขึ้น?
+- พิมพ์โค้ดตามนี้
+	document.getElementsByClassName("ccc")[0].innerHTML;
+- เกิดอะไรขึ้น?
+- พิมพ์โค้ดตามนี้
+	document.getElementById("aaa").innerHTML;
+- เกิดอะไรขึ้น?

@@ -1,0 +1,12 @@
+﻿ภารกิจที่ 15 - กด
+	น้องๆ จะได้ลองสร้าง event เมื่อมีการกดปุ่มบนคีย์บอร์ดแล้วเกิดอะไรบางอย่างขึ้น
+	เริ่มภารกิจที่ 15 ได้
+- เปิดไฟล์ mission15.html ที่พี่ๆ เตรียมไว้ให้ ด้วย text editor
+- ให้น้องพิมพ์โค้ดลงไประหว่าง tag <script></script> ตามนี้
+	document.body.addEventListener("keypress", function(event){
+		alert(event.keyCode);
+	});
+- เปิดไฟล์ด้วย browser ลองกดสักปุ่มบนคีย์บอร์ดดู เกิดอะไรขึ้น?
+- พี่ๆ ได้เตรียมไฟล์ page1.html ไว้ให้แล้ว
+- ลองเปลี่ยน alert(event.keyCode); เป็น window.location = "page1.html"; ดู
+- เปิดไฟล์ด้วย browser ลองกดสักปุ่มบนคีย์บอร์ดดู เกิดอะไรขึ้น?

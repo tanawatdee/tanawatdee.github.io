@@ -1,0 +1,14 @@
+﻿ภารกิจที่ 16 - แชร์
+	น้องๆ จะได้ลองสร้างหน้าต่างแชร์ลิงก์ไปยัง Facebook แบบง่ายที่สุด
+	เริ่มภารกิจที่ 16 ได้
+- เปิดไฟล์ mission16.html ที่พี่ๆ เตรียมไว้ให้ ด้วย text editor
+- ให้น้องพิมพ์โค้ดลงไประหว่าง tag <script></script> ตามนี้
+	document.getElementById("bbb").addEventListener("click", function(event){
+		window.open(
+			'https://www.facebook.com/sharer/sharer.php?u='
+			+encodeURIComponent('https://comcamp.in.th'),
+			'facebook-share-dialog',
+			'width=626,height=436'
+		);
+	});
+- เปิดไฟล์ด้วย browser ลองคลิกบรรทัดที่สองดู เกิดอะไรขึ้น?

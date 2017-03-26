@@ -1,0 +1,9 @@
+﻿ภารกิจที่ 14 - อีเวนต์
+	น้องๆ จะได้ลองสร้าง event เมื่อมีการคลิกเมาส์แล้วเกิดอะไรบางอย่างขึ้น
+	เริ่มภารกิจที่ 14 ได้
+- เปิดไฟล์ mission14.html ที่พี่ๆ เตรียมไว้ให้ ด้วย text editor
+- ให้น้องพิมพ์โค้ดลงไประหว่าง tag <script></script> ตามนี้
+	document.getElementById("aaa").addEventListener("click", function(){
+		alert("clicked");
+	});
+- เปิดไฟล์ด้วย browser ลองคลิกบรรทัดแรกดู เกิดอะไรขึ้น?
