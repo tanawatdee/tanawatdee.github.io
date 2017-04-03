@@ -2,6 +2,10 @@ document.body.addEventListener("keypress", start);
 document.getElementById("btnShare").addEventListener("click", start);
 document.getElementById("btnRe").addEventListener("click", start);
 
+//for touch screen devices
+document.getElementById("btnShare").addEventListener("touchstart", start);
+document.getElementById("btnRe").addEventListener("touchstart", start);
+
 function start(event){
 	if(event.keyCode == undefined && event.target.id == 'btnRe' || event.keyCode == 110)
 		window.location = "index.html";
