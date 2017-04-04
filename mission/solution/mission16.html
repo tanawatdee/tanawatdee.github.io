@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+	</head>
+	<body>
+		<p id="aaa" class="ccc">this is 1st paragraph</p>
+		<p id="bbb" class="ccc">this is 2nd paragraph</p>
+		<p>this is 3rd paragraph</p>
+		<script type="text/javascript"><!-- ↓↓↓ ใส่ javascript ตรงข้างล่างนี้ ↓↓↓ -->
+			document.getElementById("bbb").addEventListener("click", function(event){
+				window.open(
+					'https://www.facebook.com/sharer/sharer.php?u='
+					+encodeURIComponent('https://comcamp.in.th'),
+					'facebook-share-dialog',
+					'width=626,height=436'
+				);
+			});
+		</script>
+	</body>
+</html>

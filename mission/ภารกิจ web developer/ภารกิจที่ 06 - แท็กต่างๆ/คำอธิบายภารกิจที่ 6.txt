@@ -9,4 +9,5 @@
 	<p>Paragraph2<br/>
 	New line	&nbsp;</p>
 	<!-- comment -->
+	<button>Button1</button>
 - เปิดไฟล์ด้วย browser เพื่อดูสิ่งที่เกิดขึ้น
