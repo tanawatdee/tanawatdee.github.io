@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Quiz</title>
+	</head>
+	<body>
+		<div id="divMain">
+			<div id="divContent">
+				<button id="btnShare">แชร์</button>
+			</div>
+		</div>
+		<script type="text/javascript">
+			document.getElementById("btnShare").addEventListener("click", function(event){
+				window.open(
+					'https://www.facebook.com/sharer/sharer.php?u='
+					+encodeURIComponent('https://comcamp.in.th'),
+					'facebook-share-dialog',
+					'width=626,height=436'
+				);
+			});
+		</script>
+	</body>
+</html>

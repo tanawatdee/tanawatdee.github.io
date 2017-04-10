@@ -1,0 +1,22 @@
+﻿task3 - ตกแต่งให้สวยงาม
+ทำต่อจากไฟล์เดิม task1.html ให้น้องๆ เข้าไปแก้ไขไฟล์ เพื่อให้ได้หน้าเว็บตามตัวอย่างที่อยู่ในไฟล์ ตัวอย่าง3.png เพิ่ม css ต่อไปนี้
+- แท็ก body ให้...
+	- background-color เป็น skyblue
+	- margin เป็น 0
+	- padding เป็น 0
+	- width เป็น 100%
+	- height เป็น 100%
+- แท็ก button ให้...
+	- margin-top เป็น 30px
+	- margin-bottom เป็น 30px
+	- font-size เป็น 2em
+- แท็ก a เมื่อเมาส์ชี้ ให้ color เป็น red
+- id divMain ให้...
+	- text-align เป็น center
+	- height เป็น 100%
+- id divCover ให้ width เป็น 100%
+- id divTitle ให้ font-size เป็น 4em
+- id imgCover ให้ width เป็น 100%
+- id btnStart ให้ width เป็น 100%
+
+Hint: ลองทำภารกิจ 09, 10 ที่พี่ๆ เตรียมไว้ให้น้องๆ ดู
