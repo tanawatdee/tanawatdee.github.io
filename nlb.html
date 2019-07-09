@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+		html, body{
+			margin: 0;
+			padding: 0;
+			width: 100%;
+		}
+		div#main{
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			text-align: center;
+		}
+		.d-i-b{
+			display: inline-block;
+		}
+		.v-top{
+			vertical-align: top;
+		}
+		.center{
+			text-align: center;
+		}
+		.txt-l{
+			text-align: left;
+		}
+		.txt-r{
+			text-align: right;
+		}
+		#zero_bar{
+			width: 200px;
+			height: 20px;
+			background-color: skyblue;
+		}
+		#one_bar{
+			width: 50%;
+			height:100%;
+			background-color: chocolate;
+		}
+	</style>
+</head>
+<body>
+
+<div id="main">
+	<form id="nlbForm">
+		<div class="d-i-b">
+			<div class="d-i-b">
+				Alice<br>
+				<textarea type="text" cols="1" rows="10" name="a_input">1</textarea>
+			</div>
+			<div class="d-i-b v-top">
+				P_NLB<br>
+				<input type="number" step="any" min="0" max="1" name="p_nlb" value="1.0">
+			</div>
+			<div class="d-i-b">
+				Bob<br>
+				<textarea type="text" cols="1" rows="10" name="b_input">1</textarea>
+			</div>
+		</div>
+		<br>
+		<div class="d-i-b">
+			<input type="number" min="0" name="depth" value="1"><br>
+			<input type="number" min="1" name="shots" value="100"><br>
+			<input type="submit" value="Execute">
+		</div>
+		<br>
+		<div class="d-i-b">
+			prob. of correct answer: <span id="prob_ans">__</span>
+			<br>
+			0 <div id="zero_bar" class="d-i-b txt-r">
+				<div id="one_bar" class="d-i-b">
+					<div id="one_label" style="float: right;"></div>
+				</div>
+				<div id="zero_label" style="float: left;"></div>
+			</div> 1
+			<br>
+			answer: <b id="answer">__</b> confidence: <b>__</b>
+		</div>
+	</form>
+</div>
+
+
+<script type="text/javascript">
+	document.querySelector('#nlbForm').onsubmit = function() {
+		const p_nlb   = parseFloat(this.p_nlb .value)
+		const a_input = this.a_input.value
+									.split('')
+									.filter(x=>x=='0'||x=='1')
+									.map(x=>parseInt(x))
+		const b_input = this.b_input.value
+									.split('')
+									.filter(x=>x=='0'||x=='1')
+									.map(x=>parseInt(x))
+		const depth   = parseInt(this.depth.value)
+		const shots   = parseInt(this.shots.value)
+
+		execute(
+			p_nlb,
+			a_input,
+			b_input,
+			depth,
+			shots
+		).then(one_prob => {
+			const zero_prob = 1-one_prob
+
+			const one_bar    = document.querySelector('#one_bar')
+			const one_label  = document.querySelector('#one_label')
+			const zero_label = document.querySelector('#zero_label')
+			const answer     = document.querySelector('#answer')
+			const prob_ans   = document.querySelector('#prob_ans')
+			const isAnsOne   = one_prob >= 0.5
+
+			prob_ans.innerHTML = `${(expectedProb(
+										p_nlb,
+										b_input.length,
+										depth
+									)*100).toFixed(2)}%`
+			one_label.innerHTML = isAnsOne ? `${(one_prob*100).toFixed(2)}%`:''
+			zero_label.innerHTML = !isAnsOne ? `${(zero_prob*100).toFixed(2)}%`:''
+			answer.innerHTML = isAnsOne ? 1:0
+			one_bar.style.width = `${(one_prob*100).toFixed(2)}%`
+		})
+
+		return false
+	}
+</script>
+
+<script type="text/javascript">
+//########## utilities ####################
+const randBit = ()=> Math.floor(Math.random()*2)
+const randBits = n => [...Array(n)].map(o=>randBit())
+const random = Math.random
+const range = n => [...Array(n).keys()]
+const arrEq = (x,y) => !y.filter((e,i)=>x[i]!=y[i]).length
+
+//######## elementary Boolean function #################
+const or   = (x,y) => (x+y+x*y) %2
+const eq   = (x,y) => (1+x+y)   %2
+const and  = (x,y) => (x*y)     %2
+const xor  = (x,y) => (x+y)     %2
+const not  = x     => (1+x)     %2
+const xors = (...x)=> x.reduce((a,b) => xor(a,b))
+
+//############ Expected Probability #############################
+const expectedProb = (p_nlb, n_size, depth) => range(depth).reduce(
+	p => (p_nlb**2 + (1-p_nlb)**2)*(p**3+3*p**2*(1-p)) + (1 - p_nlb**2 - (1-p_nlb)**2)*((1-p)**3+3*(1-p)**2*p),
+	1/2+1/(2**(n_size+1))
+)
+
+//########## Inner Product function ####################
+const fIP = (x,y) => xors(...y.map((e,i)=>and(x[i],y[i])))
+
+//########## Nonlocal Box ####################
+function NLB(p_success){ // return measurable a,b
+	this.p_success = p_success
+	this.outA = undefined
+	this.outB = undefined
+	this.mA   = undefined
+	this.mB   = undefined
+	return [
+		{
+			measure:(mA)=>{
+				if(this.mA === undefined && this.mB === undefined){
+					this.mA = mA
+					this.outA = randBit()
+					return this.outA
+				}
+				if(this.mA === undefined && this.mB !== undefined){
+					this.mA = mA
+					this.outA = xors(and(this.mA, this.mB), this.outB, random() >= this.p_success)
+					return this.outA
+				}
+			}
+		},
+		{
+			measure:(mB)=>{
+				if(this.mB === undefined && this.mA === undefined){
+					this.mB = mB
+					this.outB = randBit()
+					return this.outB
+				}
+				if(this.mB === undefined && this.mA !== undefined){
+					this.mB = mB
+					this.outB = xors(and(this.mB, this.mA), this.outA, random() >= this.p_success)
+					return this.outB
+				}
+			}
+		}
+	]
+}
+
+//########## Party ####################
+class Party{
+	constructor(strategy){
+		this.Func = ()=>{}
+		this.NLBs = []
+		this.Inputs = []
+		this.SharedVars = []
+		this.Vars = {}
+		this.Strategy = strategy//0 for Alice, 1 for Bob
+	}
+
+	runExperiment(times = 1){
+		const len = this.Inputs.length
+		if(!this.Strategy){
+			this.Vars.v = range(times).map((e,i) =>
+				this.Func(
+					this.Inputs,
+					this.SharedVars.slice(i*len, (i+1)*len)
+				)
+			)
+		}
+		else{
+			this.Vars.v = range(times).map((e,i) =>
+				arrEq(
+					this.Inputs,
+					this.SharedVars.slice(i*len, (i+1)*len)
+				) ? 0 : randBit()
+			)
+		}
+	}
+
+	maj(iStart, step){
+		const vp  = xors(this.Vars.v[iStart + 0*step], this.Vars.v[iStart + 1*step], !this.Strategy)
+		const vpp = xors(this.Vars.v[iStart + 1*step], this.Vars.v[iStart + 2*step], !this.Strategy)
+		const wp  = this.NLBs[iStart + 1*step].measure(!this.Strategy ? vp  : vpp)
+		const wpp = this.NLBs[iStart + 2*step].measure(!this.Strategy ? vpp : vp)
+		return xors(
+			!this.Strategy,
+			this.Vars.v[iStart + 0*step],
+			this.Vars.v[iStart + 1*step],
+			this.Vars.v[iStart + 2*step],
+			wp,
+			wpp,
+			and(vp, vpp)
+		)
+	}
+
+	deepMaj(depth){//need 3^depth v result
+		range(depth).map(d=>{
+			const valStep   = 3**d
+			const blockStep = 3*valStep
+			range(3**(depth-d-1)).map(i=>{
+				this.Vars.v[i*blockStep] = this.maj(i*blockStep, valStep)
+			})
+		})
+		return this.Vars.v[0]
+	}
+}
+
+//############ Execute shots #############################
+const execute = async ( // configuration
+	P_NLB, // prob. of imperfect NLB yielding the correct result
+	A_IN,  // Alice's inputs
+	B_IN,  // Bob's inputs
+	D_MAJ, // depth of the iterated majority
+	SHOTS  // amount of executions
+) => (await Promise.all(range(SHOTS).map(async ()=>{
+	const Alice = new Party(0) // create Alice with strategy 0 (f(x,z))
+	const Bob   = new Party(1) // create Bob with strategy 1 (y==z)
+
+	const NLBs = range(3**D_MAJ).map(o=>new NLB(P_NLB)) // generate many NLBs
+
+	Alice.NLBs = NLBs.map(x=>x[0]) // give an input/output to Alice
+	Bob  .NLBs = NLBs.map(x=>x[1]) // give another input/output to Bob
+
+	Alice.SharedVars = Bob.SharedVars = randBits(B_IN.length*3**D_MAJ) // both share many variables
+	Alice.Func = Bob.Func = fIP // define function f:m bits x n bits to 1 bit
+
+	const Alice_task = new Promise(r=>{ // assign what Alice "will" do
+		Alice.Inputs = A_IN 			// get inputs
+		Alice.runExperiment(3**D_MAJ)	// caculate biased function
+		r(Alice.deepMaj(D_MAJ))			// caculate majority
+	})
+	const Bob_task = new Promise(r=>{ 	// assign what Bob "will" do
+		Bob.Inputs = B_IN 				// get inputs
+		Bob.runExperiment(3**D_MAJ)		// caculate biased function
+		r(Bob.deepMaj(D_MAJ))			// caculate majority
+	})
+
+	const dist_bit = await Promise.all([Alice_task, Bob_task])// "do" it by parrallel
+															  // when both finished,															  
+	return xor(...dist_bit)									  // get distributed bit
+}))).reduce((a,b)=>a+b)/SHOTS // sum all executions to calculate prob.
+
+
+
+</script>
+</body>
+</html>
