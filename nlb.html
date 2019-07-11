@@ -3,17 +3,25 @@
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title></title>
+	<link href="https://fonts.googleapis.com/css?family=Sarabun&display=swap" rel="stylesheet">
 	<style type="text/css">
 		html, body{
 			margin: 0;
 			padding: 0;
 			width: 100%;
+			font-family: 'Sarabun', sans-serif;
 		}
 		div#main{
 			margin: 0;
 			padding: 0;
 			width: 100%;
 			text-align: center;
+		}
+		input, textarea{
+			text-align: center;
+		}
+		textarea{
+			height: 150px;
 		}
 		.d-i-b{
 			display: inline-block;
@@ -32,13 +40,27 @@
 		}
 		#zero_bar{
 			width: 200px;
-			height: 20px;
-			background-color: skyblue;
+			height: 24px;
+			background-color: turquoise;
 		}
 		#one_bar{
 			width: 50%;
 			height:100%;
-			background-color: chocolate;
+			background-color: gold;
+		}
+		#nlbForm [type=number]{
+			width: 80px;
+		}
+		#nlbForm [name=p_nlb]{
+			width: 50px;
+		}
+		#div_nlb{
+			width: 197px;
+			height: 180px;
+			background-position: center;
+			background-size: cover;
+			background-repeat: no-repeat;
+			background-image: url('nlb.png');
 		}
 	</style>
 </head>
@@ -47,37 +69,58 @@
 <div id="main">
 	<form id="nlbForm">
 		<div class="d-i-b">
+			<div class="d-i-b v-top">
+				<br>X<sub>1</sub><br><br><br>↓<br><br><br>X<sub>m</sub>
+			</div>
 			<div class="d-i-b">
 				Alice<br>
-				<textarea type="text" cols="1" rows="10" name="a_input">1</textarea>
+				<textarea type="text" cols="1" name="a_input">1
+1
+0</textarea>
+				<br>inputs
 			</div>
-			<div class="d-i-b v-top">
-				P_NLB<br>
+			<div class="d-i-b v-top" id="div_nlb">
+				prob. NLB<br>
 				<input type="number" step="any" min="0" max="1" name="p_nlb" value="1.0">
+				<br><br><br><br><span id="nlb_use">2</span>&emsp;&emsp;&emsp;NLBs
 			</div>
 			<div class="d-i-b">
 				Bob<br>
-				<textarea type="text" cols="1" rows="10" name="b_input">1</textarea>
+				<textarea type="text" cols="1" rows="10" name="b_input">1
+1
+0</textarea>
+				<br>inputs
+			</div>
+			<div class="d-i-b v-top">
+				<br>Y<sub>1</sub><br><br><br>↓<br><br><br>Y<sub>n</sub>
 			</div>
 		</div>
 		<br>
-		<div class="d-i-b">
-			<input type="number" min="0" name="depth" value="1"><br>
-			<input type="number" min="1" name="shots" value="100"><br>
+		<div class="d-i-b txt-l">
+			Evaluate <select name="f_input">
+				<option value="0">Iner Product</option>
+				<option value="1">Equality</option>
+			</select> function<br>
+			Max prob. of correct answer: <span id="maxBoost">100%</span><br>
+			&emsp;(depending on prob. NLB)<br>
+			Depth of majority <input type="number" min="0" name="depth" value="1"> levels<br>
+			Repeat execution <input type="number" min="1" name="shots" value="100"> shots<br>
 			<input type="submit" value="Execute">
 		</div>
-		<br>
+		<hr>
 		<div class="d-i-b">
-			prob. of correct answer: <span id="prob_ans">__</span>
+			prob. of correct value: <span id="prob_ans">______</span>
 			<br>
-			0 <div id="zero_bar" class="d-i-b txt-r">
+			<span class="v-top">0</span>
+			<div id="zero_bar" class="d-i-b txt-r">
 				<div id="one_bar" class="d-i-b">
 					<div id="one_label" style="float: right;"></div>
 				</div>
 				<div id="zero_label" style="float: left;"></div>
-			</div> 1
+			</div>
+			<span class="v-top">1</span>
 			<br>
-			answer: <b id="answer">__</b> confidence: <b>__</b>
+			answer: <b id="answer">__</b> confidence: <b id="confidence">_______</b>
 		</div>
 	</form>
 </div>
@@ -94,45 +137,59 @@
 									.split('')
 									.filter(x=>x=='0'||x=='1')
 									.map(x=>parseInt(x))
+		const f_input = parseInt(this.f_input.value)
 		const depth   = parseInt(this.depth.value)
 		const shots   = parseInt(this.shots.value)
 
 		execute(
 			p_nlb,
+			f_input,
 			a_input,
 			b_input,
 			depth,
 			shots
-		).then(one_prob => {
+		).then(({
+			p_expected,
+			conf_prob,
+			one_prob
+		}) => {
 			const zero_prob = 1-one_prob
 
 			const one_bar    = document.querySelector('#one_bar')
 			const one_label  = document.querySelector('#one_label')
 			const zero_label = document.querySelector('#zero_label')
 			const answer     = document.querySelector('#answer')
+			const confidence = document.querySelector('#confidence')
 			const prob_ans   = document.querySelector('#prob_ans')
 			const isAnsOne   = one_prob >= 0.5
 
-			prob_ans.innerHTML = `${(expectedProb(
-										p_nlb,
-										b_input.length,
-										depth
-									)*100).toFixed(2)}%`
+			prob_ans.innerHTML = `${(p_expected*100).toFixed(2)}%`
 			one_label.innerHTML = isAnsOne ? `${(one_prob*100).toFixed(2)}%`:''
 			zero_label.innerHTML = !isAnsOne ? `${(zero_prob*100).toFixed(2)}%`:''
 			answer.innerHTML = isAnsOne ? 1:0
+			confidence.innerHTML = `${(conf_prob*100).toFixed(2)}%`
 			one_bar.style.width = `${(one_prob*100).toFixed(2)}%`
 		})
 
 		return false
 	}
+
+	document.querySelector('#nlbForm [name=depth]').onchange = function() {
+		document.querySelector('#nlb_use').innerHTML = 3**this.value-1
+	}
+
+	document.querySelector('#nlbForm [name=p_nlb]').onchange = function() {
+		document.querySelector('#maxBoost').innerHTML = `${(maxBoostProb(this.value)*100).toFixed(2)}%`
+	}
 </script>
 
 <script type="text/javascript">
 //########## utilities ####################
-const randBit = ()=> Math.floor(Math.random()*2)
-const randBits = n => [...Array(n)].map(o=>randBit())
+const floor = Math.floor
 const random = Math.random
+const randBit = ()=> floor(random()*2)
+const randBits = n => [...Array(n)].map(o=>randBit())
+const sqrt   = Math.sqrt
 const range = n => [...Array(n).keys()]
 const arrEq = (x,y) => !y.filter((e,i)=>x[i]!=y[i]).length
 
@@ -144,14 +201,19 @@ const xor  = (x,y) => (x+y)     %2
 const not  = x     => (1+x)     %2
 const xors = (...x)=> x.reduce((a,b) => xor(a,b))
 
-//############ Expected Probability #############################
+//############ Calculate Probability #############################
 const expectedProb = (p_nlb, n_size, depth) => range(depth).reduce(
 	p => (p_nlb**2 + (1-p_nlb)**2)*(p**3+3*p**2*(1-p)) + (1 - p_nlb**2 - (1-p_nlb)**2)*((1-p)**3+3*(1-p)**2*p),
 	1/2+1/(2**(n_size+1))
 )
+const maxBoostProb = p_nlb => {
+	const q = p_nlb**2 + (1-p_nlb)**2
+	return p_nlb > (3+sqrt(6))/6 ? 1/2 + sqrt(3)/2*sqrt((q-5/6)/(q-1/2)) : 0.5
+}
 
-//########## Inner Product function ####################
-const fIP = (x,y) => xors(...y.map((e,i)=>and(x[i],y[i])))
+//########## Function f ####################
+const fIP = (x,y) => xors(...y.map((e,i)=>and(x[i],y[i])))//inner product
+const fEQ = arrEq										  //equality
 
 //########## Nonlocal Box ####################
 function NLB(p_success){ // return measurable a,b
@@ -252,41 +314,53 @@ class Party{
 }
 
 //############ Execute shots #############################
+F_LIST = [fIP, fEQ]
+
 const execute = async ( // configuration
 	P_NLB, // prob. of imperfect NLB yielding the correct result
+	F_IN,
 	A_IN,  // Alice's inputs
 	B_IN,  // Bob's inputs
 	D_MAJ, // depth of the iterated majority
 	SHOTS  // amount of executions
-) => (await Promise.all(range(SHOTS).map(async ()=>{
-	const Alice = new Party(0) // create Alice with strategy 0 (f(x,z))
-	const Bob   = new Party(1) // create Bob with strategy 1 (y==z)
+) => {
+	let sumOne = 0
 
-	const NLBs = range(3**D_MAJ).map(o=>new NLB(P_NLB)) // generate many NLBs
+	for(let iShot = 0; iShot < SHOTS; iShot++){
 
-	Alice.NLBs = NLBs.map(x=>x[0]) // give an input/output to Alice
-	Bob  .NLBs = NLBs.map(x=>x[1]) // give another input/output to Bob
+		const Alice = new Party(0) // create Alice with strategy 0 (f(x,z))
+		const Bob   = new Party(1) // create Bob with strategy 1 (y==z)
 
-	Alice.SharedVars = Bob.SharedVars = randBits(B_IN.length*3**D_MAJ) // both share many variables
-	Alice.Func = Bob.Func = fIP // define function f:m bits x n bits to 1 bit
+		const NLBs = range(3**D_MAJ).map(o=>new NLB(P_NLB)) // generate many NLBs
 
-	const Alice_task = new Promise(r=>{ // assign what Alice "will" do
-		Alice.Inputs = A_IN 			// get inputs
-		Alice.runExperiment(3**D_MAJ)	// caculate biased function
-		r(Alice.deepMaj(D_MAJ))			// caculate majority
-	})
-	const Bob_task = new Promise(r=>{ 	// assign what Bob "will" do
-		Bob.Inputs = B_IN 				// get inputs
-		Bob.runExperiment(3**D_MAJ)		// caculate biased function
-		r(Bob.deepMaj(D_MAJ))			// caculate majority
-	})
+		Alice.NLBs = NLBs.map(x=>x[0]) // give an input/output to Alice
+		Bob  .NLBs = NLBs.map(x=>x[1]) // give another input/output to Bob
 
-	const dist_bit = await Promise.all([Alice_task, Bob_task])// "do" it by parrallel
-															  // when both finished,															  
-	return xor(...dist_bit)									  // get distributed bit
-}))).reduce((a,b)=>a+b)/SHOTS // sum all executions to calculate prob.
+		Alice.SharedVars = Bob.SharedVars = randBits(B_IN.length*3**D_MAJ) // both share many variables
+		Alice.Func = Bob.Func = F_LIST[F_IN] // define function f:m bits x n bits to 1 bit
 
+		const Alice_task = new Promise(r=>{ // assign what Alice "will" do
+			Alice.Inputs = A_IN 			// get inputs
+			Alice.runExperiment(3**D_MAJ)	// caculate biased function
+			r(Alice.deepMaj(D_MAJ))			// caculate majority
+		})
+		const Bob_task = new Promise(r=>{ 	// assign what Bob "will" do
+			Bob.Inputs = B_IN 				// get inputs
+			Bob.runExperiment(3**D_MAJ)		// caculate biased function
+			r(Bob.deepMaj(D_MAJ))			// caculate majority
+		})
 
+		const dist_bit = await Promise.all([Alice_task, Bob_task])// "do" it by parrallel
+																  // when both finished,
+		sumOne += xor(...dist_bit)								  // get distributed bit
+	}
+
+	const p_expected = expectedProb(P_NLB, B_IN.length, D_MAJ)
+	const conf_prob  = 1 - await (await fetch(`https://scipy.mixipedia.org/?k=${floor(SHOTS/2)}&n=${SHOTS}&p=${p_expected}`)).text()
+	const one_prob   = sumOne/SHOTS
+
+	return {p_expected, conf_prob, one_prob} // sum all executions to calculate prob.
+}
 
 </script>
 </body>
