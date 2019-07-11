@@ -21,7 +21,7 @@
 			text-align: center;
 		}
 		textarea{
-			height: 150px;
+			height: 212px;
 		}
 		.d-i-b{
 			display: inline-block;
@@ -56,9 +56,9 @@
 		}
 		#div_nlb{
 			width: 197px;
-			height: 180px;
-			background-position: center;
-			background-size: cover;
+			height: 242px;
+			background-position: top;
+			background-size: contain;
 			background-repeat: no-repeat;
 			background-image: url('nlb.png');
 		}
@@ -70,7 +70,7 @@
 	<form id="nlbForm">
 		<div class="d-i-b">
 			<div class="d-i-b v-top">
-				<br>X<sub>1</sub><br><br><br>↓<br><br><br>X<sub>m</sub>
+				<br>X<sub>1</sub><br><br><br><br>↓<br><br><br><br>X<sub>m</sub>
 			</div>
 			<div class="d-i-b">
 				Alice<br>
@@ -83,6 +83,8 @@
 				prob. NLB<br>
 				<input type="number" step="any" min="0" max="1" name="p_nlb" value="1.0">
 				<br><br><br><br><span id="nlb_use">2</span>&emsp;&emsp;&emsp;NLBs
+				<br><br><br>
+				<span id="shared_var">9</span> shared<br>random bits
 			</div>
 			<div class="d-i-b">
 				Bob<br>
@@ -92,23 +94,24 @@
 				<br>inputs
 			</div>
 			<div class="d-i-b v-top">
-				<br>Y<sub>1</sub><br><br><br>↓<br><br><br>Y<sub>n</sub>
+				<br>Y<sub>1</sub><br><br><br><br>↓<br><br><br><br>Y<sub>n</sub>
 			</div>
-		</div>
-		<br>
-		<div class="d-i-b txt-l">
+			<br>
 			Evaluate <select name="f_input">
 				<option value="0">Iner Product</option>
 				<option value="1">Equality</option>
-			</select> function<br>
-			Max prob. of correct answer: <span id="maxBoost">100%</span><br>
+			</select> function
+		</div>
+		<hr>
+		<div class="d-i-b txt-l">
+			Max prob. of correct value: <span id="maxBoost">100%</span><br>
 			&emsp;(depending on prob. NLB)<br>
 			Depth of majority <input type="number" min="0" name="depth" value="1"> levels<br>
 			Repeat execution <input type="number" min="1" name="shots" value="100"> shots<br>
-			<input type="submit" value="Execute">
 		</div>
 		<hr>
 		<div class="d-i-b">
+			<input type="submit" value="Execute"><br>
 			prob. of correct value: <span id="prob_ans">______</span>
 			<br>
 			<span class="v-top">0</span>
@@ -127,7 +130,9 @@
 
 
 <script type="text/javascript">
-	document.querySelector('#nlbForm').onsubmit = function() {
+	const nlbForm = document.querySelector('#nlbForm')
+
+	nlbForm.onsubmit = function() {
 		const p_nlb   = parseFloat(this.p_nlb .value)
 		const a_input = this.a_input.value
 									.split('')
@@ -175,11 +180,25 @@
 	}
 
 	document.querySelector('#nlbForm [name=depth]').onchange = function() {
+		const b_input = nlbForm.b_input.value
+									.split('')
+									.filter(x=>x=='0'||x=='1')
+									.map(x=>parseInt(x))
 		document.querySelector('#nlb_use').innerHTML = 3**this.value-1
+		document.querySelector('#shared_var').innerHTML = b_input.length*3**this.value
 	}
 
 	document.querySelector('#nlbForm [name=p_nlb]').onchange = function() {
 		document.querySelector('#maxBoost').innerHTML = `${(maxBoostProb(this.value)*100).toFixed(2)}%`
+	}
+
+	document.querySelector('#nlbForm [name=b_input]').onchange = function() {
+		const b_input = nlbForm.b_input.value
+									.split('')
+									.filter(x=>x=='0'||x=='1')
+									.map(x=>parseInt(x))
+		document.querySelector('#shared_var').innerHTML = b_input.length*3**nlbForm.depth.value
+
 	}
 </script>
 
