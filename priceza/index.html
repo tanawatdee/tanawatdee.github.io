@@ -82,6 +82,7 @@
                         })
                     },
                     readKey(event) { 
+                        event.preventDefault()
                         switch(event.which){
                             case 39: this.iRow++; break; // right
                             case 37: this.iRow--; break; // left
