@@ -84,8 +84,8 @@
                     readKey(event) { 
                         event.preventDefault()
                         switch(event.which){
-                            case 39: this.iRow++; break; // right
-                            case 37: this.iRow--; break; // left
+                            case 39: case 67: this.iRow++; break; // right
+                            case 37: case 90: this.iRow--; break; // left
                             case 68: this.rows.splice(this.iRow, 1); break; // d
                             case 69: //e
                                 catno = prompt("Category number")
