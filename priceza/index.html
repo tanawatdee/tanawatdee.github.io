@@ -1,0 +1,126 @@
+<html>
+    <head>
+        <style>
+            body, #app{
+                margin: 0;
+                padding: 0%;
+                width: 100%;
+                height: 100%;
+            }
+            iframe{
+                margin: 0;
+                padding: 0%;
+                width: 100%;
+                height: 100%;
+            }
+            td{
+                vertical-align: top;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app" @keydown="readKey">
+            <input id="csvFile" type="file" @change="readCSV">&emsp;<button @click="saveFile">Save</button>&emsp;<input type="text" placeholder="Click here to enable shortcut"><br>
+            <strong>Row: {{ iRow }} (total {{ rows.length }})</strong>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>catNo: </td><td>{{ catno }}</td>
+                    </tr>
+                    <tr>
+                        <td>subcatNo: </td><td>{{ subcatno }}</td>
+                    </tr>
+                    <tr>
+                        <td>category: </td><td>{{ cat }}</td>
+                    </tr>
+                    <tr>
+                        <td>product: </td><td>{{ product }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <iframe :src="iframe" frameborder="0"></iframe>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="papaparse.min.js"></script>
+        <script>
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    file_name: '',
+                    rows: [],
+                    iRow: 0
+                },
+                computed: {
+                    iframe(){
+                        return this.rows[this.iRow]?.[4]
+                    },
+                    product(){
+                        return this.rows[this.iRow]?.[3]
+                    },
+                    cat(){
+                        return this.rows[this.iRow]?.[2]
+                    },
+                    subcatno(){
+                        return this.rows[this.iRow]?.[1]
+                    },
+                    catno(){
+                        return this.rows[this.iRow]?.[0]
+                    },
+                },
+                methods: {
+                    readCSV() {
+                        let csvFile = document.querySelector('#csvFile').files[0]
+
+                        this.file_name = csvFile.name
+
+                        Papa.parse(csvFile, {
+                            complete: results => {
+                                console.log(results.data)
+                                this.cat = results.data[0][2]
+                                this.rows = results.data.slice(1)
+                            }
+                        })
+                    },
+                    readKey(event) { 
+                        switch(event.which){
+                            case 39: this.iRow++; break; // right
+                            case 37: this.iRow--; break; // left
+                            case 68: this.rows.splice(this.iRow, 1); break; // d
+                            case 69: //e
+                                catno = prompt("Category number")
+                                subcatno = prompt("Subcategory number")
+                                cat = prompt("Category name")
+                                Vue.set(this.rows[this.iRow], 0, catno)
+                                Vue.set(this.rows[this.iRow], 1, subcatno)
+                                Vue.set(this.rows[this.iRow], 2, cat)
+                            break;
+                            case 83: this.saveFile(); break;
+                        }
+                        
+                    },
+                    saveFile() {
+                        download(Papa.unparse(this.rows), this.file_name)
+                    }
+                }
+            })
+
+            function download(data, filename) {
+                var file = new Blob([data], {type: "text/plain;charset=utf-8"});
+                if (window.navigator.msSaveOrOpenBlob) // IE10+
+                    window.navigator.msSaveOrOpenBlob(file, filename);
+                else { // Others
+                    var a = document.createElement("a"),
+                            url = URL.createObjectURL(file);
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(function() {
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);  
+                    }, 0); 
+                }
+            }
+        </script>
+    </body>
+</html>
