@@ -1,0 +1,15 @@
+<script>
+window.fbAsyncInit = function() {
+    FB.init({
+    appId            : '821065378077829',
+    autoLogAppEvents : true,
+    xfbml            : true,
+    version          : 'v8.0'
+    });
+    var source = new EventSource("https://streaming-graph.facebook.com/781989572580888/live_reactions?access_token=EAALqwS4ynIUBAFvZCrtY85nr5AZAUWaBNdTWOWkPk9kbClmbgGVYmVl27sPiC5MEWbaNI5iwD5vR36O6YSrVNa4KhwHNCylHWTgztO3ZAepKwvyI3mXY74C96wXw1lllwq4GSGnoxZA9HjJZCOa3UZCWZBk9fNQ1QYiwKAGVJ2dRO591VMXnwvWIZC4D6vQWzwn3oqZBEgXrudwCNWao9ydye2cOZCZCJZAgLvXVwijz5xmeaQZDZD&fields=reaction_stream");
+    source.onmessage = function(event) {
+        console.log('msg')
+    };
+};
+</script>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
