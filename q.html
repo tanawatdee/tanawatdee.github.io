@@ -366,5 +366,23 @@ section.world div::before, section.world div::after {
     </div>
   </div>
 </section>
+    <script>
+    let seconds = 10; // countdown from 10 seconds
+
+    function countdown() {
+      const counter = document.getElementById("counter");
+      counter.textContent = seconds;
+
+      if (seconds === 0) {
+        // Redirect when countdown reaches 0
+        window.location.href = "https://example.com";
+      } else {
+        seconds--;
+        setTimeout(countdown, 1000);
+      }
+    }
+
+    window.onload = countdown;
+  </script>
   </body>
 </html>
